@@ -80,7 +80,7 @@ async function sendResponse(data) {
                 client.messages
                     .create({
                         from: `whatsapp:${process.env.FROM_NUMBER}`,
-                        body: `Vaccination Availability in Pincode *${param}*\n\nAvailable Slots: *${coData.tCap}*\n\nDose 1: *${coData.tCap1}*\nDose 2: *${coData.tCap2}*\n\nTotal Centers Listed: ${coData.tCenters}\n\nBook your slots on CoWin portal\nhttps://cowin.gov.in`,
+                        body: `Vaccination Availability in Pincode *${param}*\n\n💉Available Slots: *${coData.tCap}*\n\n          Dose 1: *${coData.tCap1}*\n          Dose 2: *${coData.tCap2}*\n\n💉Total Centers Listed: *${coData.tCenters}*\n\nBook your slots on CoWin portal\nhttps://cowin.gov.in`,
                         to: data.From
                     })
                     .then(message => console.log(data.From, "slot message", message.sid));
