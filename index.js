@@ -11,7 +11,8 @@ const app = express()
 const bodyParser = require('body-parser')
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const tips = require('./tips.js')
+const tips = require('./tips.js');
+const cowin = require('./cowin.js')
 
 app.get('*', (req, res) => {
     res.status(404).send("<h1>Sorry, Nothing's here</h1>")
@@ -72,6 +73,31 @@ async function sendResponse(data) {
             })
             .then(message => console.log(data.From, "buy message", message.sid));
 
+    } else if (command == "vaccine" && param) {
+        cowin(param)
+            .then(coData => {
+
+                client.messages
+                    .create({
+                        from: `whatsapp:${process.env.FROM_NUMBER}`,
+                        body: `Vaccination Availability in Pincode *${param}*\n\nAvailable Slots: *${coData.tCap}*\n\nDose 1: *${coData.tCap1}*\nDose 2: *${coData.tCap2}*\n\nTotal Centers Listed: ${coData.tCenters}\n\nBook your slots on CoWin portal\nhttps://cowin.gov.in`,
+                        to: data.From
+                    })
+                    .then(message => console.log(data.From, "slot message", message.sid));
+            })
+            .catch(e => {
+
+                client.messages
+                    .create({
+                        from: `whatsapp:${process.env.FROM_NUMBER}`,
+                        body: "Some *Error* ocured⚠️\n\nPls check the PIN code that you entered and try again🙏",
+                        to: data.From
+                    })
+                    .then(message => console.log(data.From, "error slot message", message.sid));
+
+            })
+
+
     } else if (command == "consult") {
         client.messages
             .create({
@@ -97,7 +123,7 @@ async function sendResponse(data) {
         client.messages
             .create({
                 from: `whatsapp:${process.env.FROM_NUMBER}`,
-                body: `Send any of these commands and see the magic🗝️\n\n*doc* _DOCTOR'S NAME_ 👉 to search for a doctor\n\n*buy* _MEDICINE NAME_ 👉 to search and buy a medicine\n\n*consult online* 👉 Links to popular online doctor consultation services\n\n*health tips* 👉 to get a health tip\n\n`,
+                body: `Send any of these commands and see the magic🗝️\n\n*doc* _DOCTOR'S NAME_ 👉 to search for a doctor\n\n*buy* _MEDICINE NAME_ 👉 to search and buy a medicine\n\n*vaccine* _PINCODE_ 👉 To find the number of vaccination slots available for each dose in a PIN Code\n\n*consult online* 👉 Links to popular online doctor consultation services\n\n*health tips* 👉 to get a health tip\n\n`,
                 to: data.From
             })
             .then(message => console.log(data.From, "help message", message.sid));
